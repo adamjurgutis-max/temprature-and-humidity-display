@@ -1,26 +1,19 @@
 
+
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <U8g2lib.h>
 #include <DHT.h>
 
-// OLED settings
-#define SCREEN_WIDTH 128
-#define SCREEN_HEIGHT 64
-#define OLED_RESET -1
-#define SCREEN_ADDRESS 0x3C
+// OLED: First test with SSD1306 128x64
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(
+  U8G2_R0,
+  U8X8_PIN_NONE
+);
 
-// DHT11 settings
+// DHT11
 #define DHT_PIN 4
 #define DHT_TYPE DHT11
-
-Adafruit_SSD1306 display(
-  SCREEN_WIDTH,
-  SCREEN_HEIGHT,
-  &Wire,
-  OLED_RESET
-);
 
 DHT dht(DHT_PIN, DHT_TYPE);
 
@@ -30,71 +23,49 @@ void setup() {
   Wire.begin(21, 22);
   dht.begin();
 
-  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println("OLED initialization failed!");
-    while (true) {
-      delay(100);
-    }
-  }
+  display.begin();
+  display.clearBuffer();
 
-Serial.println("Testing OLED screen");
+  display.setFont(u8g2_font_ncenB14_tr);
+  display.drawStr(10, 30, "OLED TEST");
 
-display.clearDisplay();
-display.fillScreen(SSD1306_WHITE);
-display.display();
+  display.sendBuffer();
 
-Serial.println("White screen test");
-delay(3000);
-
-display.clearDisplay();
-display.display();
-
-Serial.println("Black screen test");
-delay(1000);
-
-display.setTextColor(SSD1306_WHITE);
-display.setTextSize(2);
-display.setCursor(0, 0);
-display.println("OLED TEST");
-display.display();
-
-  delay(1000);
+  Serial.println("U8g2 OLED test started");
 }
 
 void loop() {
   float humidity = dht.readHumidity();
   float temperature = dht.readTemperature();
 
-  if (isnan(humidity) || isnan(temperature)) {
+  if (!isnan(humidity) && !isnan(temperature)) {
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.print(" C | Humidity: ");
+    Serial.print(humidity);
+    Serial.println(" %");
+
+    display.clearBuffer();
+
+    display.setFont(u8g2_font_6x12_tr);
+    display.drawStr(0, 12, "TEMPERATURE");
+
+    char tempText[20];
+    snprintf(tempText, sizeof(tempText), "%.1f C", temperature);
+
+    display.setFont(u8g2_font_ncenB14_tr);
+    display.drawStr(0, 34, tempText);
+
+    display.setFont(u8g2_font_6x12_tr);
+    char humidityText[20];
+    snprintf(humidityText, sizeof(humidityText), "HUMIDITY: %.0f%%", humidity);
+    display.drawStr(0, 55, humidityText);
+
+    display.sendBuffer();
+  } else {
     Serial.println("DHT11 reading failed!");
-    delay(2000);
-    return;
   }
-
-  Serial.print("Temperature: ");
-  Serial.print(temperature);
-  Serial.print(" C | Humidity: ");
-  Serial.print(humidity);
-  Serial.println(" %");
-
-  display.clearDisplay();
-
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println("TEMPERATURE");
-
-  display.setTextSize(2);
-  display.setCursor(0, 12);
-  display.print(temperature, 1);
-  display.println(" C");
-
-  display.setTextSize(1);
-  display.setCursor(0, 42);
-  display.print("HUMIDITY: ");
-  display.print(humidity, 0);
-  display.println("%");
-
-  display.display();
 
   delay(2000);
 }
+

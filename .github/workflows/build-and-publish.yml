@@ -1,4 +1,5 @@
 
+
 name: Build and publish ESP32 web flasher
 
 on:
@@ -41,14 +42,17 @@ jobs:
           cp web/index.html public/index.html
           cp .pio/build/esp32dev/bootloader.bin public/bootloader.bin
           cp .pio/build/esp32dev/partitions.bin public/partitions.bin
+
           BOOT_APP0="$(find "$HOME/.platformio" -type f -name boot_app0.bin -print -quit)"
           test -n "$BOOT_APP0" || { echo "boot_app0.bin not found"; exit 1; }
           cp "$BOOT_APP0" public/boot_app0.bin
-        cp .pio/build/esp32dev/firmware.bin public/firmware-v2.bin
+
+          cp .pio/build/esp32dev/firmware.bin public/firmware-v2.bin
+
           cat > public/manifest.json <<'EOF'
           {
             "name": "ESP32 Temperature and Humidity Monitor",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "new_install_prompt_erase": true,
             "builds": [{
               "chipFamily": "ESP32",
@@ -56,11 +60,12 @@ jobs:
                 {"path": "bootloader.bin", "offset": 4096},
                 {"path": "partitions.bin", "offset": 32768},
                 {"path": "boot_app0.bin", "offset": 57344},
-               {"path": "firmware-v2.bin", "offset": 65536}
+                {"path": "firmware-v2.bin", "offset": 65536}
               ]
             }]
           }
           EOF
+
           touch public/.nojekyll
 
       - name: Configure GitHub Pages
@@ -81,4 +86,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
 

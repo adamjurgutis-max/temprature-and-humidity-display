@@ -44,7 +44,7 @@ jobs:
           BOOT_APP0="$(find "$HOME/.platformio" -type f -name boot_app0.bin -print -quit)"
           test -n "$BOOT_APP0" || { echo "boot_app0.bin not found"; exit 1; }
           cp "$BOOT_APP0" public/boot_app0.bin
-          cp .pio/build/esp32dev/firmware.bin public/firmware.bin
+        cp .pio/build/esp32dev/firmware.bin public/firmware-v2.bin
           cat > public/manifest.json <<'EOF'
           {
             "name": "ESP32 Temperature and Humidity Monitor",
@@ -56,7 +56,7 @@ jobs:
                 {"path": "bootloader.bin", "offset": 4096},
                 {"path": "partitions.bin", "offset": 32768},
                 {"path": "boot_app0.bin", "offset": 57344},
-                {"path": "firmware.bin", "offset": 65536}
+               {"path": "firmware-v2.bin", "offset": 65536}
               ]
             }]
           }

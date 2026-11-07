@@ -6,7 +6,7 @@
 
 // Wiring for ESP32 DevKit V1
 static constexpr uint8_t DHT_PIN = 4;
-static constexpr uint8_t DHT_TYPE = DHT22;
+static constexpr uint8_t DHT_TYPE = DHT11;
 static constexpr int OLED_SDA = 21;
 static constexpr int OLED_SCL = 22;
 
@@ -44,10 +44,10 @@ void readAndDisplaySensor() {
     display.setCursor(0, 3);
     display.println("ROOM MONITOR");
     display.setCursor(0, 17);
-    display.println("DHT22 read error");
+    display.println("DHT11 read error");
     display.display();
 
-    Serial.println("DHT22 read failed. Check VCC, GND, signal wire and sensor.");
+    Serial.println("DHT11 read failed. Check VCC, GND, signal wire and sensor.");
     return;
   }
 

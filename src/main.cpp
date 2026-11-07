@@ -6,7 +6,7 @@
 #include <DHT.h>
 
 // OLED: First test with SSD1306 128x64
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C display(
+U8G2_SH1106_128X64_NONAME_F_HW_I2C display(
   U8G2_R0,
   U8X8_PIN_NONE
 );

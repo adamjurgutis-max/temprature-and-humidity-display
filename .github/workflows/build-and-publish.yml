@@ -3,7 +3,8 @@ name: Build and publish ESP32 web flasher
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -34,14 +35,15 @@ jobs:
         run: pio run
 
       - name: Prepare web flasher files
+        shell: bash
         run: |
           mkdir -p public
           cp web/index.html public/index.html
           cp .pio/build/esp32dev/bootloader.bin public/bootloader.bin
           cp .pio/build/esp32dev/partitions.bin public/partitions.bin
-         BOOT_APP0="$(find "$HOME/.platformio" -type f -name boot_app0.bin -print -quit)"
-test -n "$BOOT_APP0" || { echo "boot_app0.bin not found"; exit 1; }
-cp "$BOOT_APP0" public/boot_app0.bin
+          BOOT_APP0="$(find "$HOME/.platformio" -type f -name boot_app0.bin -print -quit)"
+          test -n "$BOOT_APP0" || { echo "boot_app0.bin not found"; exit 1; }
+          cp "$BOOT_APP0" public/boot_app0.bin
           cp .pio/build/esp32dev/firmware.bin public/firmware.bin
           cat > public/manifest.json <<'EOF'
           {
@@ -79,3 +81,4 @@ cp "$BOOT_APP0" public/boot_app0.bin
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+

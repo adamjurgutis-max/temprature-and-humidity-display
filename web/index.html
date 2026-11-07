@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESP32 Room Monitor Flasher</title>
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 620px; margin: 48px auto; padding: 0 18px; line-height: 1.5; }
+    h1 { font-size: 1.7rem; }
+    .panel { padding: 18px; border: 1px solid #ccc; border-radius: 12px; }
+    esp-web-install-button { display: block; margin-top: 18px; }
+    code { background: #eee; padding: 2px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>ESP32 Temperature &amp; Humidity Monitor</h1>
+  <p>Firmware for ESP32 DevKit V1, DHT22 and a 0.91-inch 128×32 SSD1306 I²C OLED.</p>
+  <div class="panel">
+    <strong>Before flashing</strong>
+    <ol>
+      <li>Use Google Chrome or Microsoft Edge on a computer.</li>
+      <li>Connect the ESP32 to USB.</li>
+      <li>Close other tabs or programs using its serial port.</li>
+      <li>Click Install and select the ESP32 serial port.</li>
+    </ol>
+    <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+  </div>
+  <p><strong>Important:</strong> Flashing erases the current program on the ESP32. The OLED and sensor should be wired as described in the project instructions.</p>
+</body>
+</html>

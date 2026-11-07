@@ -37,12 +37,26 @@ void setup() {
     }
   }
 
-  display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
-  display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.println("Starting...");
-  display.display();
+Serial.println("Testing OLED screen");
+
+display.clearDisplay();
+display.fillScreen(SSD1306_WHITE);
+display.display();
+
+Serial.println("White screen test");
+delay(3000);
+
+display.clearDisplay();
+display.display();
+
+Serial.println("Black screen test");
+delay(1000);
+
+display.setTextColor(SSD1306_WHITE);
+display.setTextSize(2);
+display.setCursor(0, 0);
+display.println("OLED TEST");
+display.display();
 
   delay(1000);
 }

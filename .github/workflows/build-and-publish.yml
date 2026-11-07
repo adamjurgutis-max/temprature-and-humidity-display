@@ -1,0 +1,79 @@
+
+name: Build and publish ESP32 web flasher
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out project
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Build firmware
+        run: pio run
+
+      - name: Prepare web flasher files
+        run: |
+          mkdir -p public
+          cp web/index.html public/index.html
+          cp .pio/build/esp32dev/bootloader.bin public/bootloader.bin
+          cp .pio/build/esp32dev/partitions.bin public/partitions.bin
+          cp .pio/build/esp32dev/boot_app0.bin public/boot_app0.bin
+          cp .pio/build/esp32dev/firmware.bin public/firmware.bin
+          cat > public/manifest.json <<'EOF'
+          {
+            "name": "ESP32 Temperature and Humidity Monitor",
+            "version": "1.0.0",
+            "new_install_prompt_erase": true,
+            "builds": [{
+              "chipFamily": "ESP32",
+              "parts": [
+                {"path": "bootloader.bin", "offset": 4096},
+                {"path": "partitions.bin", "offset": 32768},
+                {"path": "boot_app0.bin", "offset": 57344},
+                {"path": "firmware.bin", "offset": 65536}
+              ]
+            }]
+          }
+          EOF
+          touch public/.nojekyll
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
